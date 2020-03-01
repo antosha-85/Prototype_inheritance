@@ -1,0 +1,120 @@
+Post management tools menu
+
+Upgrade
+Anton Smirnov
+
+Only you can see this message
+This story's distribution setting is on. Learn more
+Prototype Inheritance
+Anton Smirnov
+Anton Smirnov
+Feb 29 · 5 min read
+
+
+Prototype Inheritance
+I would like to touch on a subject that we didn’t study during our Bootcamp and which I consider vital — prototypes.
+JavaScript is a bit confusing for developers experienced in class-based languages (like Java or C++), as it is dynamic and does not provide a class implementation (the class keyword was introduced in ES2015, but is syntactical sugar, JavaScript remains prototype-based). By default, every function, let’s call it X, in JavaScript has a property called prototype. This property by default is empty. We can add object properties and methods to it. When we create an object X1 from that function it will inherit all the properties and methods that are defined in that prototype.
+Object and prototype schema
+Object and prototype schema
+Let’s take a look at the function below. Every function expression is a constructor in JavaScript. We can add properties and methods into it:
+let x = function (j) {
+  this.i = 0; //setting default value
+  this.j = j;
+  this.getJ = function () {
+    return this.j;
+  }
+};
+We can create instances of that constructor using the keyword “new”:
+let x1 = new x(1);
+let x2 = new x(2);
+Those new instances will be objects even though the thing they appear to copy is a function. If you do “typeof” x1 and x2 you will get “object”. Conversely, if you do “typeof” x it will be “function”.
+
+Because x1 and x2 were created from the constructor x, they will have copies of all of its methods. We can illustrate this by finding the method “getJ”. Let’s check it out by running console.log():
+console.log(x1.getJ()); //prints 1
+console.log(x2.getJ()); //prints 2
+As you can see, every single instance (i.e x1,x2, etc.) contains the method getJ. We can further verify this by running console.dir().
+
+Let’s imagine that we need to create a thousand objects that follow a similar template, and if we do that each object will have the same methods, which is redundant and wastes memory. The solution is prototypes!
+We can define a prototype of a function x and put it outside of that function:
+let x = function (j) {
+  this.i = 0; //setting default value
+  this.j = j;
+};
+x.prototype.getJ = function () {
+  return this.j;
+};
+let x1 = new x(1);
+let x2 = new x(2);
+If we run this code with console.log() we will get the same result as before:
+console.log(x1.getJ()); //prints 1
+console.log(x2.getJ()); //prints 2
+The only difference is that x1 and x2 no longer have their own getJ method.
+
+So why and how can we print x1.getJ() then? When we call that method refers back to the prototype of its parent — finds it and uses it. To explain what exactly happens we first need to define what parents are (Master Object).
+Master Object
+Let’s again create a constructor x and check where it was created. For that purpose, we’re going to run console.dir():
+let x = function () {
+};
+console.dir(x);
+
+If we expand x we can see that x has something called __proto__. By the way, that symbol double underscore is often called “dunder”. That __proto__ is a parent or creator of the constructor x. If you go further and expand that first __proto__ you can see that it has its __proto__ which is “Object”. That master Object has a bunch of methods and properties inside it. So ultimately our constructor was created from that Master Object.
+
+This is called a prototype chain.
+
+If we look at object x1, it was created from a constructor x, x from the parent function and that function was created from the Master Object. Every one of them has a bunch of prototype properties and methods. Whenever you call a method it will first try to find one inside of x1 and if it can’t find it it will look up into the constructor x. If it can’t find it there it will look up into the parent function and so on until it reaches the Master Object. If nothing was found in the Master Object then it will return “undefined”.
+For example, the Master Object has a property “toString”, which serializes the object and prints it out.
+
+So we can call this method:
+console.log(x.toString());
+And we get an empty function, which will print the body of the function and is exactly what the result should be in our case.
+
+Returning back to getJ method
+Now after getting acquainted with the Master Object we can return back to our getJ method and confirm that getJ belongs to a parent of x constructor.
+
+There is still a lot to learn about prototypes and how to use them. This short article was created based on the video below. Big shout-out to TechSit.
+
+
+JavaScript
+Prototype
+Inheritance
+Functional Programming
+Object Oriented
+
+
+
+Anton Smirnov
+WRITTEN BY
+
+Anton Smirnov
+Write the first response
+More From Medium
+Top on Medium
+31 Important Things You Should Say No to For a Happier Life
+Danny Forest
+Danny Forest in SkillUp Ed
+Feb 19 · 17 min read
+8.3K
+
+Top on Medium
+Lessons I’ve Learned From Studying Money for 10 Years
+Tim Denning
+Tim Denning in The Startup
+Feb 25 · 6 min read
+4.8K
+
+Top on Medium
+The Horrifying Things I’ve Seen as an Office Manager in Silicon Valley
+The Bold Italic Editors
+The Bold Italic Editors in The Bold Italic
+Feb 27 · 8 min read
+2.8K
+
+Discover Medium
+Welcome to a place where words matter. On Medium, smart voices and original ideas take center stage - with no ads in sight. Watch
+Make Medium yours
+Follow all the topics you care about, and we’ll deliver the best stories for you to your homepage and inbox. Explore
+Become a member
+Get unlimited access to the best stories on Medium — and support writers while you’re at it. Just $5/month. Upgrade
+About
+Help
+Legal
