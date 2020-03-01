@@ -1,0 +1,60 @@
+---
+
+Prototype Inheritance
+Prototype Inheritance
+I would like to touch on a subject that we didn't study during our Bootcamp and which I consider vital - prototypes.
+JavaScript is a bit confusing for developers experienced in class-based languages (like Java or C++), as it is dynamic and does not provide a class implementation (the class keyword is introduced in ES2015, but is syntactical sugar, JavaScript remains prototype-based). By default, every function, let's call it X, in JavaScript has a property called prototype. This property by default is empty. We can add properties and methods to it. When we create an object X1 from that function it will inherit all the properties and methods that are defining that prototype.
+Let's take a look at the function below. Every function expression is a constructor in JavaScript. We can add properties and methods into it.
+let x = function (j) {
+  this.i = 0; //setting default value
+  this.j = j;
+  this.getJ = function () {
+    return this.j;
+  }
+};
+We can create instances of that constructor using the word "New".
+let x1 = new x(1);
+let x2 = new x(2);
+Because those methods were created from the constructor x, we can find the method "getJ". Let's check it out by running console.log().
+console.log(x1.getJ()); //prints 1
+console.log(x2.getJ()); //prints 2
+Every single instance (i.e x1,x2 etc.) will contain from now on a method getJ. We can check it out by running console.dir().
+Let's imagine that we need to create a thousand objects and if we do that each object will have those methods, which is redundant and inappropriate. The solution is prototypes!
+
+
+---
+
+We can define a prototype of a function x and put it outside of that function.
+let x = function (j) {
+  this.i = 0; //setting default value
+  this.j = j;
+};
+x.prototype.getJ = function () {
+  return this.j;
+};
+let x1 = new x(1);
+let x2 = new x(2);
+If we run that code with console.log() we will get absolutely the same result.
+console.log(x1.getJ()); //prints 1
+console.log(x2.getJ()); //prints 2
+The only difference is that x1 and x2 don't have their own method called getJ.
+So why and how can we print x1.getJ() then? When we call that method it looks it up into the prototype chain into its parents - it finds it and uses it. To explain what exactly happens we first need to define what parents are (Master Object).
+Master Object
+Let's again create a constructor x and check where it was created. For that purpose, we're going to run console.dir()
+let x = function () {
+};
+console.dir(x);
+And if we expand x we can see that x has something called __proto__. By the way, that symbol double underscore very often call "dunder". That __proto__ is a parent or creator of that constructor x. If you go further and expand that first __proto__ you can see that it has its __proto__ which is "Object". That master Object has a bunch of methods and properties inside it. So ultimately our constructor was created from that Master Object.
+This is what called a prototypes chain. 
+If we're talking about that instantiated object x1, it was created from a constructor x, x from the parent function and that function was created from the Master Object. Every one of them has a bunch of prototype properties and methods. Whenever you call a method it will first try to find one inside of x1 and if it can't find it it will look up into the constructor x and if it can't find it there it will look up into the parent function and so on until it reaches the Master Object. If nothing was found then it will return "undefined". 
+For example, Master Object has a property "toString", which serialized the object and prints it out.
+So we can call this method.
+console.log(x.toString());
+And we get an empty function, which will print the body of the function and is exactly what the result should be in our case.
+Returning back to getJ method
+Now after getting acquainted with the Master Object we can return back to our getJ method and confirm that getJ method actually belongs to a parent of x constructor.
+
+
+---
+
+There is still a lot to learn about prototypes and how to use it. This short article was created based on the video below. Big shout-out to TechSit.
